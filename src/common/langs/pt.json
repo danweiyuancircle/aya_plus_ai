@@ -214,5 +214,20 @@
   "pairDevice": "Parear novos dispositivos via Wi-Fi",
   "pairingCode": "Código de Pareamento",
   "enabled": "Ativado",
-  "disabled": "Desativado"
+  "disabled": "Desativado",
+  "tvRemote": "Controle de TV",
+  "mute": "Mudo",
+  "playPause": "Reproduzir/Pausar",
+  "stop": "Parar",
+  "menu": "Menu",
+  "guide": "Guia",
+  "tvInput": "Entrada",
+  "settings": "Configurações",
+  "channelUp": "Canal +",
+  "channelDown": "Canal -",
+  "rewind": "Retroceder",
+  "fastForward": "Avançar",
+  "previous": "Anterior",
+  "next": "Próximo",
+  "float": "Flutuante"
 }

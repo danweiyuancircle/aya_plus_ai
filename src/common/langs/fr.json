@@ -193,5 +193,20 @@
   "checkUpdate": "Vérifier les mises à jour",
   "updateNotAvailable": "Aucune mise à jour disponible pour le moment",
   "updateAvailable": "Une nouvelle version est disponible, souhaitez-vous la télécharger ?",
-  "updateErr": "Échec de la vérification des mises à jour"
+  "updateErr": "Échec de la vérification des mises à jour",
+  "tvRemote": "Télécommande TV",
+  "mute": "Muet",
+  "playPause": "Lecture/Pause",
+  "stop": "Arrêt",
+  "menu": "Menu",
+  "guide": "Guide",
+  "tvInput": "Entrée",
+  "settings": "Paramètres",
+  "channelUp": "Chaîne +",
+  "channelDown": "Chaîne -",
+  "rewind": "Retour rapide",
+  "fastForward": "Avance rapide",
+  "previous": "Précédent",
+  "next": "Suivant",
+  "float": "Flottant"
 }

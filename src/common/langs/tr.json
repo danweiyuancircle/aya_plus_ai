@@ -214,5 +214,20 @@
   "pairDevice": "Wi-Fi üzerinden yeni cihazları eşleştir",
   "pairingCode": "Eşleştirme Kodu",
   "enabled": "Etkin",
-  "disabled": "Devre Dışı"
+  "disabled": "Devre Dışı",
+  "tvRemote": "TV Kumandası",
+  "mute": "Sessiz",
+  "playPause": "Oynat/Duraklat",
+  "stop": "Durdur",
+  "menu": "Menü",
+  "guide": "Program Rehberi",
+  "tvInput": "Giriş",
+  "settings": "Ayarlar",
+  "channelUp": "Kanal Yukarı",
+  "channelDown": "Kanal Aşağı",
+  "rewind": "Geri Sar",
+  "fastForward": "İleri Sar",
+  "previous": "Önceki",
+  "next": "Sonraki",
+  "float": "Yüzen"
 }

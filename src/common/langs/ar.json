@@ -115,5 +115,20 @@
   "deviceRefreshed": "تم تحديث الجهاو",
   "ipAddress": "IP عوان الـ",
   "macAddress": "MAC عنوان الـ",
-  "signature": "التوقيع"
+  "signature": "التوقيع",
+  "tvRemote": "جهاز التحكم عن بعد",
+  "mute": "كتم الصوت",
+  "playPause": "تشغيل/إيقاف",
+  "stop": "إيقاف",
+  "menu": "القائمة",
+  "guide": "الدليل",
+  "tvInput": "الإدخال",
+  "settings": "الإعدادات",
+  "channelUp": "القناة التالية",
+  "channelDown": "القناة السابقة",
+  "rewind": "ترجيع",
+  "fastForward": "تقديم سريع",
+  "previous": "السابق",
+  "next": "التالي",
+  "float": "عائم"
 }

@@ -177,5 +177,20 @@
   "source": "Source",
   "destination": "Destination",
   "duration": "Duration",
-  "preview": "Preview"
+  "preview": "Preview",
+  "tvRemote": "TV Remote",
+  "mute": "Mute",
+  "playPause": "Play/Pause",
+  "stop": "Stop",
+  "menu": "Menu",
+  "guide": "Guide",
+  "tvInput": "Input",
+  "settings": "Settings",
+  "channelUp": "Channel Up",
+  "channelDown": "Channel Down",
+  "rewind": "Rewind",
+  "fastForward": "Fast Forward",
+  "previous": "Previous",
+  "next": "Next",
+  "float": "Float"
 }

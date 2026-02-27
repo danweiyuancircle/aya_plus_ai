@@ -10,6 +10,7 @@ import {
   IpcDisablePackage,
   IpcEnablePackage,
   IpcGetPackages,
+  IpcGetTopActivity,
   IpcGetTopPackage,
   IpcInstallPackage,
   IpcStartPackage,
@@ -123,6 +124,34 @@ const enablePackage: IpcEnablePackage = async function (deviceId, pkg) {
   await shell(deviceId, `pm enable ${pkg}`)
 }
 
+const getTopActivity: IpcGetTopActivity = async function (deviceId) {
+  const result = await shell(deviceId, 'dumpsys activity top')
+  const lines = result.split('\n')
+  let activityLine = ''
+  for (let i = lines.length - 1; i >= 0; i--) {
+    if (contain(lines[i], 'ACTIVITY')) {
+      activityLine = trim(lines[i])
+      break
+    }
+  }
+
+  if (!activityLine) {
+    return { packageName: '', activityName: '' }
+  }
+
+  const parts = activityLine.split(/\s+/)
+  const comp = parts[1] || ''
+  const idx = comp.indexOf('/')
+  if (idx === -1) {
+    return { packageName: comp, activityName: '' }
+  }
+
+  return {
+    packageName: comp.substring(0, idx),
+    activityName: comp.substring(idx + 1),
+  }
+}
+
 export async function init(c: Client) {
   client = c
 
@@ -132,6 +161,7 @@ export async function init(c: Client) {
   handleEvent('installPackage', installPackage)
   handleEvent('uninstallPackage', uninstallPackage)
   handleEvent('getTopPackage', getTopPackage)
+  handleEvent('getTopActivity', getTopActivity)
   handleEvent('clearPackage', clearPackage)
   handleEvent('disablePackage', disablePackage)
   handleEvent('enablePackage', enablePackage)

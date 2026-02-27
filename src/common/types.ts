@@ -162,6 +162,10 @@ export type IpcGetTopPackage = (deviceId: string) => Promise<{
   name: string
   pid: number
 }>
+export type IpcGetTopActivity = (deviceId: string) => Promise<{
+  packageName: string
+  activityName: string
+}>
 export type IpcGetWebviews = (
   deviceId: string,
   pid: number

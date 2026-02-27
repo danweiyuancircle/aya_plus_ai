@@ -176,5 +176,20 @@
   "pairingCode": "Código de emparejamiento",
   "enabled": "Habilitado",
   "disabled": "Deshabilitado",
-  "storageUsage": "Uso de Almacenamiento"
+  "storageUsage": "Uso de Almacenamiento",
+  "tvRemote": "Control de TV",
+  "mute": "Silenciar",
+  "playPause": "Reproducir/Pausar",
+  "stop": "Detener",
+  "menu": "Menú",
+  "guide": "Guía",
+  "tvInput": "Entrada",
+  "settings": "Ajustes",
+  "channelUp": "Canal +",
+  "channelDown": "Canal -",
+  "rewind": "Retroceder",
+  "fastForward": "Avance rápido",
+  "previous": "Anterior",
+  "next": "Siguiente",
+  "float": "Flotante"
 }
