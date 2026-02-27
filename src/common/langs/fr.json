@@ -208,5 +208,6 @@
   "fastForward": "Avance rapide",
   "previous": "Précédent",
   "next": "Suivant",
-  "float": "Flottant"
+  "float": "Flottant",
+  "keyword": "Mot-clé"
 }

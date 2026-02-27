@@ -36,3 +36,28 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.actions {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 6px;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0;
+  &:hover {
+    background: var(--color-fill-secondary);
+    color: var(--color-text);
+  }
+}

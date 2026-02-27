@@ -52,12 +52,32 @@ export default observer(function StatusBar() {
     }
   }, [device])
 
+  async function handleClearData() {
+    if (!device || !activity.packageName) return
+    try {
+      await main.clearPackage(device.id, activity.packageName)
+    } catch {
+      // ignore
+    }
+  }
+
+  async function handleRestart() {
+    if (!device || !activity.packageName) return
+    try {
+      await main.stopPackage(device.id, activity.packageName)
+      await main.startPackage(device.id, activity.packageName)
+    } catch {
+      // ignore
+    }
+  }
+
   if (!device) return null
 
-  const activityText = activity.packageName
+  const pkg = activity.packageName
+  const activityText = pkg
     ? activity.activityName
-      ? `${activity.packageName}/${activity.activityName}`
-      : activity.packageName
+      ? `${pkg}/${activity.activityName}`
+      : pkg
     : '-'
 
   return (
@@ -67,6 +87,24 @@ export default observer(function StatusBar() {
           <span className="icon-android" />
           <span className={Style.text}>{activityText}</span>
         </span>
+        {pkg && (
+          <span className={Style.actions}>
+            <button
+              className={Style.actionBtn}
+              title={t('clearData')}
+              onClick={handleClearData}
+            >
+              <span className="icon-delete" />
+            </button>
+            <button
+              className={Style.actionBtn}
+              title={t('restart')}
+              onClick={handleRestart}
+            >
+              <span className="icon-refresh" />
+            </button>
+          </span>
+        )}
       </div>
       {deviceInfo && (
         <div className={Style.right}>

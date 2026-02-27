@@ -192,5 +192,6 @@
   "fastForward": "Fast Forward",
   "previous": "Previous",
   "next": "Next",
-  "float": "Float"
+  "float": "Float",
+  "keyword": "Keyword"
 }

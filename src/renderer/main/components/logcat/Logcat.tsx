@@ -30,9 +30,12 @@ export default observer(function Logcat() {
     package?: string
     tag?: string
   }>({})
+  const [keyword, setKeyword] = useState('')
   const logcatRef = useRef<Logcat>(null)
   const entriesRef = useRef<any[]>([])
   const logcatIdRef = useRef('')
+  const keywordRef = useRef('')
+  const refilterIdRef = useRef(0)
 
   const { device } = store
 
@@ -42,8 +45,11 @@ export default observer(function Logcat() {
         return
       }
       if (logcatRef.current) {
-        logcatRef.current.append(entry)
         entriesRef.current.push(entry)
+        const kw = keywordRef.current
+        if (!kw || matchKeyword(entry, kw)) {
+          logcatRef.current.append(entry)
+        }
       }
     }
     const offLogcatEntry = main.on('logcatEntry', onLogcatEntry)
@@ -88,6 +94,32 @@ export default observer(function Logcat() {
     )}.txt`
 
     download(data, name, 'text/plain')
+  }
+
+  function refilter(kw: string) {
+    const logcat = logcatRef.current
+    if (!logcat) return
+    logcat.clear()
+
+    const id = ++refilterIdRef.current
+    const entries = entriesRef.current
+    const BATCH = 200
+    let idx = 0
+
+    function next() {
+      if (refilterIdRef.current !== id) return
+      const end = Math.min(idx + BATCH, entries.length)
+      for (; idx < end; idx++) {
+        if (!kw || matchKeyword(entries[idx], kw)) {
+          logcat.append(entries[idx])
+        }
+      }
+      if (idx < entries.length) {
+        requestAnimationFrame(next)
+      }
+    }
+
+    requestAnimationFrame(next)
   }
 
   function clear() {
@@ -150,6 +182,11 @@ export default observer(function Logcat() {
                 tag: val,
               })
               break
+            case 'keyword':
+              setKeyword(val)
+              keywordRef.current = val
+              refilter(val)
+              break
           }
         }}
       >
@@ -184,6 +221,11 @@ export default observer(function Logcat() {
           keyName="tag"
           placeholder={t('tag')}
           value={filter.tag || ''}
+        />
+        <LunaToolbarInput
+          keyName="keyword"
+          placeholder={t('keyword')}
+          value={keyword}
         />
         <LunaToolbarSpace />
         <ToolbarIcon
@@ -257,4 +299,12 @@ export default observer(function Logcat() {
 
 function toLetter(priority: number) {
   return ['?', '?', 'V', 'D', 'I', 'W', 'E'][priority]
+}
+
+function matchKeyword(entry: any, keyword: string) {
+  const kw = keyword.toLowerCase()
+  return (
+    (entry.message && entry.message.toLowerCase().indexOf(kw) > -1) ||
+    (entry.tag && entry.tag.toLowerCase().indexOf(kw) > -1)
+  )
 }
