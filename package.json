@@ -1,7 +1,7 @@
 {
   "name": "aya",
   "productName": "AYAPlus",
-  "appId": "io.liriliri.ayaplus",
+  "appId": "io.liriliri.ayaai",
   "version": "1.14.2",
   "description": "Android adb desktop app",
   "main": "dist/main/index.js",

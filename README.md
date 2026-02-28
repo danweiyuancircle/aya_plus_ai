@@ -4,38 +4,28 @@
   </a>
 </div>
 
-<h1 align="center">AYA</h1>
+<h1 align="center">AYAPlus</h1>
 
 <div align="center">
 
-Android ADB desktop app.
-
-<a href="https://www.producthunt.com/posts/aya-1?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-aya&#0045;1" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=899538&theme=light&t=1740125747753" alt="AYA - Open&#0032;source&#0032;desktop&#0032;app&#0032;for&#0032;controlling&#0032;android&#0032;devices | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
-
-[![Windows][windows-image]][release-url]
-[![macOS][mac-image]][release-url]
-[![Linux][linux-image]][release-url]
-[![Downloads][download-image]][release-url]
-![License][license-image]
+An enhanced fork of [AYA](https://github.com/liriliri/aya) — Android ADB desktop app with additional features.
 
 </div>
 
-[windows-image]: https://img.shields.io/badge/-Windows-blue?style=flat-square&logo=windows
-[mac-image]: https://img.shields.io/badge/-macOS-black?style=flat-square&logo=apple
-[linux-image]: https://img.shields.io/badge/-Linux-yellow?style=flat-square&logo=linux
-[download-image]: https://img.shields.io/github/downloads/liriliri/aya/total?style=flat-square
-[release-url]: https://github.com/liriliri/aya/releases
-[license-image]: https://img.shields.io/github/license/liriliri/aya?style=flat-square
+## New in AYAPlus
 
-<img src="https://aya.liriliri.io/screencast.png" style="width:100%">
+* **Screencast keyboard input**: Full keyboard support during screen mirroring — letters, digits, arrow keys, ESC (as Back), F1–F12, Tab, and more.
+* **Logcat keyword filter**: Filter logcat output by keywords for easier debugging.
+* **Status bar app actions**: Quick actions accessible from the status bar.
+* **TV remote floating mode**: Floating TV remote with a dedicated status bar.
 
-[AYA](https://aya.liriliri.io/) is a desktop application for easily controlling android devices, which can be considered as a GUI wrapper for ADB.
+## Acknowledgements
 
-## Installation
+AYAPlus is built on top of [AYA](https://github.com/liriliri/aya) by [surunzi](https://github.com/liriliri). Huge thanks for creating such a great open-source ADB GUI tool!
 
-Click [here](https://github.com/liriliri/aya/releases/) to download and install AYA. Windows x64, Mac arm64, Mac x64 and Linux x86_64 are supported.
+---
 
-## Features
+## Original AYA Features
 
 <img src="https://aya.liriliri.io/screenshot.png" style="width:100%">
 
