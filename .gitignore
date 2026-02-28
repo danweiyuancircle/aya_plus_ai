@@ -1,7 +1,8 @@
 node_modules/
 dist/
 release/
-resources/
+resources/*
+!resources/aya.dex
 package-lock.json
 
 .gradle/
