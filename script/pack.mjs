@@ -92,10 +92,10 @@ if (isWindows) {
       },
     ]
     config.appx = {
-      identityName: 'LiriLiri.AYAAndroidManager',
+      identityName: 'LiriLiri.AYAPlusAndroidManager',
       publisher: 'CN=B8CA87F2-EAEA-4C05-B38C-AAA50D3CBA24',
       publisherDisplayName: 'surunzi',
-      displayName: 'AYA Android Manager',
+      displayName: 'AYAPlus Android Manager',
     }
   }
 }

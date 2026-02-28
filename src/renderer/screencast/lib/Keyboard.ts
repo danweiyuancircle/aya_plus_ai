@@ -24,7 +24,17 @@ export default class Keyboard {
   constructor(client: ScrcpyClient) {
     this.client = client
   }
+  private shouldIgnore(): boolean {
+    const el = document.activeElement
+    if (!el) return false
+    const tag = el.tagName
+    return (
+      tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT'
+    )
+  }
   down = async (e: KeyboardEvent) => {
+    if (this.shouldIgnore()) return
+
     e.preventDefault()
     e.stopPropagation()
 
@@ -47,6 +57,8 @@ export default class Keyboard {
     }
   }
   up = async (e: KeyboardEvent) => {
+    if (this.shouldIgnore()) return
+
     e.preventDefault()
     e.stopPropagation()
 
@@ -148,7 +160,7 @@ export default class Keyboard {
       code = e.code
     }
 
-    if (key.length === 1 && /[a-zA-Z]/.test(key)) {
+    if (key.length === 1) {
       if (/[a-zA-Z]/.test(key)) {
         code = `Key${upperCase(key)}`
       } else if (isNumeric(key)) {
@@ -190,10 +202,23 @@ const ignoreCodes = [
   'Home',
   'End',
   'Insert',
-  'NumLock',
+  'Tab',
+  'F1',
+  'F2',
+  'F3',
+  'F4',
+  'F5',
+  'F6',
+  'F7',
+  'F8',
+  'F9',
+  'F10',
+  'F11',
+  'F12',
 ]
 
-const keyCodes = {
+const keyCodes: Record<string, string> = {
+  Escape: 'AndroidBack',
   ' ': 'Space',
   ';': 'Semicolon',
   '*': 'Star',

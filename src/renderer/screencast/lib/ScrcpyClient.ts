@@ -75,6 +75,9 @@ export default class ScrcpyClient extends Emitter {
   destroy() {
     logger.info('destroy')
 
+    document.removeEventListener('keydown', this.keyboard.down)
+    document.removeEventListener('keyup', this.keyboard.up)
+
     if (this.server) {
       this.server.close()
     }
@@ -267,9 +270,8 @@ export default class ScrcpyClient extends Emitter {
 
     el.addEventListener('wheel', (e) => this.injectScroll(el, e))
 
-    el.setAttribute('tabindex', '0')
-    el.addEventListener('keydown', this.keyboard.down)
-    el.addEventListener('keyup', this.keyboard.up)
+    document.addEventListener('keydown', this.keyboard.down)
+    document.addEventListener('keyup', this.keyboard.up)
   }
   private injectKeyCode(e: PointerEvent) {
     e.preventDefault()
