@@ -86,6 +86,24 @@ Types for IPC functions are defined in `src/common/types.ts`. The main process e
 
 Custom i18n system with language files in `src/common/langs/` and `src/share/common/langs/`. Supports: en-US, zh-CN, zh-TW, ar, ru, tr, fr, pt, es.
 
+## Release Process
+
+Every release must build all three platforms (macOS, Windows, Linux) locally before publishing:
+
+```bash
+# 1. Build production code
+npm run build
+
+# 2. Package all three platforms (skip code signing for macOS and Windows)
+CSC_IDENTITY_AUTO_DISCOVERY=false npm run pack                # macOS (current platform)
+CSC_IDENTITY_AUTO_DISCOVERY=false npm run pack -- --win       # Windows
+npm run pack -- --linux                                       # Linux
+```
+
+- macOS and Windows builds use unsigned packaging (`CSC_IDENTITY_AUTO_DISCOVERY=false`) since we don't have valid signing certificates.
+- After packaging, upload all artifacts (`.dmg`, `.exe`, `.AppImage`) to a GitHub Release using `gh release create`.
+- Built artifacts are output to `release/<version>/`.
+
 ## Code Style
 
 - Prettier: no semicolons, single quotes, 80 char width
