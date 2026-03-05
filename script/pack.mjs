@@ -107,6 +107,8 @@ if (args.includes('--win')) {
   buildOptions.targets = Platform.WINDOWS.createTarget('nsis', Arch.x64)
 } else if (args.includes('--linux')) {
   buildOptions.targets = Platform.LINUX.createTarget('AppImage', Arch.x64)
+} else if (args.includes('--arm64')) {
+  buildOptions.targets = Platform.MAC.createTarget('dmg', Arch.arm64)
 }
 
 await builder.build(buildOptions)
