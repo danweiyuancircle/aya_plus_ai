@@ -47,7 +47,7 @@ function getTemplate(): MenuItemConstructorOptions[] {
       {
         label: `${t('checkUpdate')}...`,
         click() {
-          updater.checkUpdate()
+          updater.checkUpdate(true)
         },
       },
       ...hideMenu,

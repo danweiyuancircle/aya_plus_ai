@@ -55,6 +55,22 @@
   margin-left: 6px;
 }
 
+.update {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  padding: 0 6px;
+  border-radius: 3px;
+  background: var(--color-primary-bg, rgba(22, 119, 255, 0.15));
+  color: var(--color-primary, #1677ff);
+  font-weight: 500;
+  cursor: pointer;
+  &:hover {
+    background: var(--color-primary-bg-hover, rgba(22, 119, 255, 0.25));
+  }
+}
+
 .action-btn {
   display: inline-flex;
   align-items: center;
