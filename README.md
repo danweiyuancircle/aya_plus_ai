@@ -26,9 +26,12 @@ An enhanced fork of [AYA](https://github.com/liriliri/aya) — Android ADB deskt
 </table>
 
 * **Screencast keyboard input**: Full keyboard support during screen mirroring — letters, digits, arrow keys, ESC (as Back), F1–F12, Tab, and more.
-* **Logcat keyword filter**: Filter logcat output by keywords for easier debugging.
-* **Status bar app actions**: Quick actions accessible from the status bar.
-* **TV remote floating mode**: Floating TV remote with a dedicated status bar.
+* **Independent remote controller window**: TV remote runs as a separate window, allowing simultaneous operation with the main interface.
+* **Permanent toolbar actions**: ADB CLI, restart ADB, root, port mapping, HTTP proxy, and remote controller are always accessible from the top toolbar.
+* **Logcat filter history**: Package, tag, and keyword filter inputs remember history with autocomplete dropdown, supporting keyboard navigation and fuzzy matching.
+* **Color-coded log levels**: Logcat log level dropdown colors match the log output for quick visual identification.
+* **Proxy status indicator**: When an HTTP proxy is set on the device, a warning badge is displayed in the status bar for easy awareness.
+* **Status bar app actions**: Quick actions (clear data, restart) for the current foreground app in the status bar.
 
 ## Acknowledgements
 
