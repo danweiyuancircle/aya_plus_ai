@@ -93,7 +93,7 @@ export default class ScrcpyClient extends Emitter {
     const buf = this.recorder.stop()
     if (buf) {
       const { canceled, filePath } = await main.showSaveDialog({
-        defaultPath: `recording-${dateFormat('yyyymmddHHMM')}.mkv`,
+        defaultPath: `recording-${dateFormat('yyyymmddHHMMss')}.mkv`,
       })
       if (canceled) {
         return

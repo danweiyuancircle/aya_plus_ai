@@ -23,7 +23,7 @@ export default observer(function Toolbar() {
   async function captureScreenshot() {
     const video = await scrcpyClient.getVideo()
     const blob = await video.decoder.snapshot()
-    download(blob, `screenshot-${dateFormat('yyyymmddHHMM')}.png`, 'image/png')
+    download(blob, `screenshot-${dateFormat('yyyymmddHHMMss')}.png`, 'image/png')
   }
 
   async function toggleFullscreen() {
