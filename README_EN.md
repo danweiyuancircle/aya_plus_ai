@@ -8,8 +8,6 @@
 
 An enhanced fork of [AYA](https://github.com/liriliri/aya) — Android ADB desktop app with additional features.
 
-[![Download](https://img.shields.io/github/v/release/danweiyuancircle/aya_plus?label=Download)](https://github.com/danweiyuancircle/aya_plus/releases)
-
 **English** | [中文](README.md)
 
 </div>
@@ -48,14 +46,14 @@ An enhanced fork of [AYA](https://github.com/liriliri/aya) — Android ADB deskt
 
 ## Download
 
-| Platform | File |
-|----------|------|
-| macOS (Intel) | `AYAPlus-x.x.x-mac-x64.dmg` |
-| macOS (Apple Silicon) | `AYAPlus-x.x.x-mac-arm64.dmg` |
-| Windows | `AYAPlus-x.x.x-win-x64.exe` |
-| Linux | `AYAPlus-x.x.x-linux-x64.AppImage` |
+| Platform | Format |
+|----------|--------|
+| macOS (Intel) | `.dmg` |
+| macOS (Apple Silicon) | `.dmg` |
+| Windows | `.exe` |
+| Linux | `.AppImage` |
 
-Download from [GitHub Releases](https://github.com/danweiyuancircle/aya_plus/releases).
+Download the latest version from [GitHub Releases](https://github.com/danweiyuancircle/aya_plus/releases).
 
 ## Acknowledgements
 
