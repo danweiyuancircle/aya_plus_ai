@@ -13,6 +13,7 @@ import { IPackageInfo } from 'common/types'
 
 interface IProps extends IModalProps {
   packageInfo: IPackageInfo
+  permissions?: string[]
 }
 
 export default function PackageInfoModal(props: IProps) {
@@ -50,12 +51,12 @@ export default function PackageInfoModal(props: IProps) {
         t('firstInstallTime'),
         dateFormat(
           new Date(packageInfo.firstInstallTime),
-          'yyyy-mm-dd HH:MM:ss'
-        )
+          'yyyy-mm-dd HH:MM:ss',
+        ),
       )}
       {item(
         t('lastUpdateTime'),
-        dateFormat(new Date(packageInfo.lastUpdateTime), 'yyyy-mm-dd HH:MM:ss')
+        dateFormat(new Date(packageInfo.lastUpdateTime), 'yyyy-mm-dd HH:MM:ss'),
       )}
       {item(t('apkSize'), fileSize(packageInfo.apkSize))}
       {item(t('appSize'), fileSize(packageInfo.appSize))}
@@ -63,8 +64,20 @@ export default function PackageInfoModal(props: IProps) {
       {item(t('cacheSize'), fileSize(packageInfo.cacheSize))}
       {signature &&
         item(t('signature') + ' MD5', md5(convertBin(signature, 'Unit8Array')))}
+      <div className={Style.permissionsTitle}>{t('permissions')}</div>
+      {props.permissions && props.permissions.length > 0 ? (
+        <div className={Style.permissions}>
+          {props.permissions.map((perm) => (
+            <Copyable key={perm} className={Style.permissionItem}>
+              {perm}
+            </Copyable>
+          ))}
+        </div>
+      ) : (
+        <div className={Style.permissions}>-</div>
+      )}
     </LunaModal>,
-    document.body
+    document.body,
   )
 }
 

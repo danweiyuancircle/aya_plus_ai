@@ -15,6 +15,7 @@ import {
   IpcInstallPackage,
   IpcStartPackage,
   IpcStopPackage,
+  IpcGetPackagePermissions,
   IpcUninstallPackage,
 } from 'common/types'
 
@@ -27,13 +28,13 @@ const getCurrentUser = singleton(async (deviceId: string) => {
 
 export const getPackages = singleton(<IpcGetPackages>(async (
   deviceId,
-  system = true
+  system = true,
 ) => {
   const result: string = await shell(
     deviceId,
     `pm list packages${system ? '' : ' -3'} --user ${await getCurrentUser(
-      deviceId
-    )}`
+      deviceId,
+    )}`,
   )
 
   return map(trim(result).split('\n'), (line) => line.slice(8))
@@ -69,7 +70,7 @@ const uninstallPackage: IpcUninstallPackage = async function (deviceId, pkg) {
 async function getMainComponent(deviceId: string, pkg: string) {
   const result = await shell(
     deviceId,
-    `dumpsys package ${pkg} | grep -A 1 MAIN`
+    `dumpsys package ${pkg} | grep -A 1 MAIN`,
   )
   const lines = result.split('\n')
   for (let i = 0, len = lines.length; i < len; i++) {
@@ -152,6 +153,28 @@ const getTopActivity: IpcGetTopActivity = async function (deviceId) {
   }
 }
 
+const getPackagePermissions: IpcGetPackagePermissions = async function (
+  deviceId,
+  pkg,
+) {
+  const result = await shell(
+    deviceId,
+    `dumpsys package ${pkg} | grep "android.permission"`,
+  )
+  const lines = result.split('\n')
+  const permissions: string[] = []
+  for (let i = 0, len = lines.length; i < len; i++) {
+    const line = trim(lines[i])
+    if (line) {
+      const perm = line.split(':')[0].trim()
+      if (perm && !contain(permissions, perm)) {
+        permissions.push(perm)
+      }
+    }
+  }
+  return permissions
+}
+
 export async function init(c: Client) {
   client = c
 
@@ -165,4 +188,5 @@ export async function init(c: Client) {
   handleEvent('clearPackage', clearPackage)
   handleEvent('disablePackage', disablePackage)
   handleEvent('enablePackage', enablePackage)
+  handleEvent('getPackagePermissions', getPackagePermissions)
 }

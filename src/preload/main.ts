@@ -17,6 +17,7 @@ import {
   IpcGetFileUrl,
   IpcGetFps,
   IpcGetPackageInfos,
+  IpcGetPackagePermissions,
   IpcGetPackages,
   IpcGetProcesses,
   IpcGetTopActivity,
@@ -67,11 +68,9 @@ export default Object.assign(mainObj, {
   getDevicesStore: invoke<IpcGetStore>('getDevicesStore'),
   setDevicesStore: invoke<IpcSetStore>('setDevicesStore'),
   setScreencastAlwaysOnTop: invoke<IpcSetScreencastAlwaysOnTop>(
-    'setScreencastAlwaysOnTop'
+    'setScreencastAlwaysOnTop',
   ),
-  setRemoteAlwaysOnTop: invoke<IpcSetRemoteAlwaysOnTop>(
-    'setRemoteAlwaysOnTop'
-  ),
+  setRemoteAlwaysOnTop: invoke<IpcSetRemoteAlwaysOnTop>('setRemoteAlwaysOnTop'),
   getSettingsStore: invoke<IpcGetStore>('getSettingsStore'),
   setSettingsStore: invoke<IpcSetStore>('setSettingsStore'),
   showScreencast: invoke('showScreencast'),
@@ -106,6 +105,9 @@ export default Object.assign(mainObj, {
   getPackageInfos: invoke<IpcGetPackageInfos>('getPackageInfos'),
   disablePackage: invoke<IpcDisablePackage>('disablePackage'),
   enablePackage: invoke<IpcEnablePackage>('enablePackage'),
+  getPackagePermissions: invoke<IpcGetPackagePermissions>(
+    'getPackagePermissions',
+  ),
   pullFile: invoke<IpcPullFile>('pullFile'),
   pushFile: invoke<IpcPushFile>('pushFile'),
   openFile: invoke<IpcOpenFile>('openFile'),

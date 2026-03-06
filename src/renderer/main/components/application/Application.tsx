@@ -46,6 +46,7 @@ export default observer(function Application() {
   const [dropHighlight, setDropHighlight] = useState(false)
   const dataGridRef = useRef<DataGrid>(null)
   const [packageInfoModalVisible, setPackageInfoModalVisible] = useState(false)
+  const [permissions, setPermissions] = useState<string[]>([])
   const [isOpenEffectAnimating, setIsOpenEffectAnimating] = useState(false)
   const [openEffectStyle, setOpenEffectStyle] = useState({
     left: 0,
@@ -72,7 +73,7 @@ export default observer(function Application() {
       setIsLoading(true)
       const packages = await main.getPackages(
         device.id,
-        store.application.sysPackage
+        store.application.sysPackage,
       )
       const chunks = chunk(packages, 50)
       let packageInfos: any[] = []
@@ -80,7 +81,7 @@ export default observer(function Application() {
         const chunk = chunks[i]
         packageInfos = concat(
           packageInfos,
-          await main.getPackageInfos(device.id, chunk)
+          await main.getPackageInfos(device.id, chunk),
         )
         iconsRef.current = map(packageInfos, (info) => {
           const style: any = {
@@ -103,7 +104,7 @@ export default observer(function Application() {
     } else {
       const idx = findIdx(
         packageInfos,
-        (info) => info.packageName === packageName
+        (info) => info.packageName === packageName,
       )
       if (idx !== -1) {
         const infos = await main.getPackageInfos(device.id, [packageName])
@@ -149,14 +150,20 @@ export default observer(function Application() {
     }
   }
 
-  function showInfo(packageName: string) {
+  async function showInfo(packageName: string) {
     const packageInfo = find(
       packageInfos,
-      (info) => info.packageName === packageName
+      (info) => info.packageName === packageName,
     )
     if (packageInfo) {
       setPackageInfo(packageInfo)
       setPackageInfoModalVisible(true)
+      try {
+        const perms = await main.getPackagePermissions(device!.id, packageName)
+        setPermissions(perms)
+      } catch {
+        setPermissions([])
+      }
     }
   }
 
@@ -215,7 +222,7 @@ export default observer(function Application() {
         label: t('stop'),
         click: async () => {
           const result = await LunaModal.confirm(
-            confirmText('stopPackageConfirm', info)
+            confirmText('stopPackageConfirm', info),
           )
           if (result) {
             await main.stopPackage(device.id, info.packageName)
@@ -229,7 +236,7 @@ export default observer(function Application() {
         label: t('disablePackage'),
         click: async () => {
           const result = await LunaModal.confirm(
-            confirmText('disablePackageConfirm', info)
+            confirmText('disablePackageConfirm', info),
           )
           if (result) {
             await main.disablePackage(device.id, info.packageName)
@@ -251,7 +258,7 @@ export default observer(function Application() {
         label: t('clearData'),
         click: async () => {
           const result = await LunaModal.confirm(
-            confirmText('clearDataConfirm', info)
+            confirmText('clearDataConfirm', info),
           )
           if (result) {
             await main.clearPackage(device.id, info.packageName)
@@ -264,7 +271,7 @@ export default observer(function Application() {
         label: t('uninstall'),
         click: async () => {
           const result = await LunaModal.confirm(
-            confirmText('uninstallConfirm', info)
+            confirmText('uninstallConfirm', info),
           )
           if (result) {
             await main.uninstallPackage(device.id, info.packageName)
@@ -325,14 +332,14 @@ export default observer(function Application() {
               label: toEl(
                 `<span><img src="${info.icon || defaultIcon}" />${
                   info.label
-                }</span>`
+                }</span>`,
               ),
               packageName: info.packageName,
               versionName: info.versionName,
               minSdkVersion: info.minSdkVersion,
               targetSdkVersion: info.targetSdkVersion,
               storageUsage: fileSize(
-                info.appSize + info.dataSize + info.cacheSize
+                info.appSize + info.dataSize + info.cacheSize,
               ),
               appSize: fileSize(info.appSize),
               dataSize: fileSize(info.dataSize),
@@ -340,11 +347,11 @@ export default observer(function Application() {
               enabled: info.enabled ? t('enabled') : t('disabled'),
               firstInstallTime: dateFormat(
                 new Date(info.firstInstallTime),
-                'yyyy-mm-dd HH:MM:ss'
+                'yyyy-mm-dd HH:MM:ss',
               ),
               lastUpdateTime: dateFormat(
                 new Date(info.lastUpdateTime),
-                'yyyy-mm-dd HH:MM:ss'
+                'yyyy-mm-dd HH:MM:ss',
               ),
             }
           })}
@@ -490,8 +497,12 @@ export default observer(function Application() {
       {!isNull(packageInfo) && (
         <PackageInfoModal
           packageInfo={packageInfo}
+          permissions={permissions}
           visible={packageInfoModalVisible}
-          onClose={() => setPackageInfoModalVisible(false)}
+          onClose={() => {
+            setPackageInfoModalVisible(false)
+            setPermissions([])
+          }}
         />
       )}
     </div>

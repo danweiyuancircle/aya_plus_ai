@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react'
 import { t } from 'common/util'
 import Style from './StatusBar.module.scss'
 import store from '../../store'
+import PackageInfoModal from '../application/PackageInfoModal'
+import { IPackageInfo } from 'common/types'
 
 interface IDeviceInfo {
   model: string
@@ -11,9 +13,15 @@ interface IDeviceInfo {
 }
 
 export default observer(function StatusBar() {
-  const [activity, setActivity] = useState({ packageName: '', activityName: '' })
+  const [activity, setActivity] = useState({
+    packageName: '',
+    activityName: '',
+  })
   const [deviceInfo, setDeviceInfo] = useState<IDeviceInfo | null>(null)
   const [proxy, setProxy] = useState('')
+  const [packageInfo, setPackageInfo] = useState<IPackageInfo | null>(null)
+  const [permissions, setPermissions] = useState<string[]>([])
+  const [infoModalVisible, setInfoModalVisible] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval>>()
 
   const device = store.device
@@ -89,6 +97,23 @@ export default observer(function StatusBar() {
     }
   }
 
+  async function handleShowInfo() {
+    if (!device || !activity.packageName) return
+    try {
+      const [infos, perms] = await Promise.all([
+        main.getPackageInfos(device.id, [activity.packageName]),
+        main.getPackagePermissions(device.id, activity.packageName),
+      ])
+      if (infos.length > 0) {
+        setPackageInfo(infos[0])
+        setPermissions(perms)
+        setInfoModalVisible(true)
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   if (!device) return null
 
   const pkg = activity.packageName
@@ -99,63 +124,83 @@ export default observer(function StatusBar() {
     : '-'
 
   return (
-    <div className={Style.container}>
-      <div className={Style.left}>
-        <span className={Style.item} title={activityText}>
-          <span className="icon-android" />
-          <span className={Style.text}>{activityText}</span>
-        </span>
-        {pkg && (
-          <span className={Style.actions}>
-            <button
-              className={Style.actionBtn}
-              title={t('clearData')}
-              onClick={handleClearData}
-            >
-              <span className="icon-delete" />
-            </button>
-            <button
-              className={Style.actionBtn}
-              title={t('restart')}
-              onClick={handleRestart}
-            >
-              <span className="icon-refresh" />
-            </button>
+    <>
+      <div className={Style.container}>
+        <div className={Style.left}>
+          <span className={Style.item} title={activityText}>
+            <span className="icon-android" />
+            <span className={Style.text}>{activityText}</span>
           </span>
-        )}
-      </div>
-      <div className={Style.right}>
-        {deviceInfo && (
-          <>
-            {proxy && (
-              <span
-                className={Style.proxy}
-                title={`${t('httpProxy')}: ${proxy}`}
+          {pkg && (
+            <span className={Style.actions}>
+              <button
+                className={Style.actionBtn}
+                title={t('clearData')}
+                onClick={handleClearData}
               >
-                <span className="icon-browser" />
-                {t('httpProxy')}: {proxy}
-              </span>
-            )}
-            {deviceInfo.model && (
-              <span className={Style.item}>
-                <span className="icon-phone" />
-                {deviceInfo.model}
-              </span>
-            )}
-            {deviceInfo.ip && (
-              <span className={Style.item}>
-                <span className="icon-wifi" />
-                {deviceInfo.ip}
-              </span>
-            )}
-            {deviceInfo.androidVersion && (
-              <span className={Style.item}>
-                {t('androidVersion')} {deviceInfo.androidVersion}
-              </span>
-            )}
-          </>
-        )}
+                <span className="icon-delete" />
+              </button>
+              <button
+                className={Style.actionBtn}
+                title={t('restart')}
+                onClick={handleRestart}
+              >
+                <span className="icon-refresh" />
+              </button>
+              <button
+                className={Style.actionBtn}
+                title={t('packageInfo')}
+                onClick={handleShowInfo}
+              >
+                <span className="icon-info" />
+              </button>
+            </span>
+          )}
+        </div>
+        <div className={Style.right}>
+          {deviceInfo && (
+            <>
+              {proxy && (
+                <span
+                  className={Style.proxy}
+                  title={`${t('httpProxy')}: ${proxy}`}
+                >
+                  <span className="icon-browser" />
+                  {t('httpProxy')}: {proxy}
+                </span>
+              )}
+              {deviceInfo.model && (
+                <span className={Style.item}>
+                  <span className="icon-phone" />
+                  {deviceInfo.model}
+                </span>
+              )}
+              {deviceInfo.ip && (
+                <span className={Style.item}>
+                  <span className="icon-wifi" />
+                  {deviceInfo.ip}
+                </span>
+              )}
+              {deviceInfo.androidVersion && (
+                <span className={Style.item}>
+                  {t('androidVersion')} {deviceInfo.androidVersion}
+                </span>
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
+      {packageInfo && (
+        <PackageInfoModal
+          packageInfo={packageInfo}
+          permissions={permissions}
+          visible={infoModalVisible}
+          onClose={() => {
+            setInfoModalVisible(false)
+            setPermissions([])
+          }}
+        />
+      )}
+    </>
   )
 })

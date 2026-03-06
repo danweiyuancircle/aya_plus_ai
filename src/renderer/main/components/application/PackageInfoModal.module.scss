@@ -65,3 +65,23 @@
   text-overflow: ellipsis;
   padding-left: 20px;
 }
+
+.permissions-title {
+  padding: #{theme.$padding-x-s}px 0;
+  border-top: 1px solid var(--color-border);
+  font-weight: 500;
+}
+
+.permissions {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: #{theme.$padding-x-s}px 0;
+}
+
+.permission-item {
+  display: block;
+  padding: 2px 0;
+  font-size: 12px;
+  opacity: 0.8;
+  word-break: break-all;
+}
