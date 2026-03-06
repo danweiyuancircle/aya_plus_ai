@@ -46,7 +46,7 @@ export default observer(function Capture() {
       offData()
       offEnd()
       if (captureIdRef.current) {
-        main.stopCapture(captureIdRef.current)
+        main.stopCapture(captureIdRef.current, true)
       }
     }
   }, [])

@@ -186,7 +186,10 @@ export type IpcStartCapture = (
   deviceId: string,
   filter?: string
 ) => Promise<string>
-export type IpcStopCapture = (captureId: string) => Promise<void>
+export type IpcStopCapture = (
+  captureId: string,
+  cleanup?: boolean
+) => Promise<void>
 export type IpcExportCapture = (
   captureId: string,
   filePath: string

@@ -1,4 +1,3 @@
-import Emitter from 'licia/Emitter'
 import types from 'licia/types'
 import uniqId from 'licia/uniqId'
 import { Client } from '@devicefarmer/adbkit'
@@ -10,112 +9,122 @@ import {
   IpcExportCapture,
 } from 'common/types'
 import fs from 'fs-extra'
+import { shell } from './base'
 
 let client: Client
 
-class Capture extends Emitter {
-  private stream: any
-  private buf: Buffer[] = []
-  private packetCount = 0
-  private headerSkipped = false
+const CAPTURE_DIR = '/data/local/tmp'
 
-  constructor(stream: any) {
-    super()
-    this.stream = stream
-  }
+interface CaptureInfo {
+  deviceId: string
+  remotePath: string
+  packetCount: number
+  size: number
+  running: boolean
+  timer: ReturnType<typeof setInterval> | null
+}
 
-  init() {
-    const { stream } = this
+const captures: types.PlainObj<CaptureInfo> = {}
 
-    stream.on('data', (data: Buffer) => {
-      if (!this.headerSkipped) {
-        // tcpdump -w - outputs pcap global header (24 bytes) first
-        this.headerSkipped = true
-        const remaining = data.slice(24)
-        if (remaining.length > 0) {
-          this.buf.push(remaining)
-          this.packetCount++
-          this.emitStats()
-        }
-        return
-      }
+async function pollStats(captureId: string) {
+  const info = captures[captureId]
+  if (!info || !info.running) return
 
-      this.buf.push(data)
-      this.packetCount++
-      this.emitStats()
-    })
-
-    stream.on('end', () => {
-      this.emit('end')
-    })
-  }
-
-  private emitStats() {
-    this.emit('data', {
-      packetCount: this.packetCount,
-      size: this.getTotalSize(),
-    })
-  }
-
-  private getTotalSize() {
-    let size = 0
-    for (const b of this.buf) {
-      size += b.length
+  try {
+    const result = await shell(info.deviceId, `ls -l ${info.remotePath}`)
+    const parts = result.trim().split(/\s+/)
+    const size = parseInt(parts[4], 10)
+    if (!isNaN(size) && size > 24) {
+      info.size = size - 24
+      info.packetCount++
+      window.sendTo('main', 'captureData', captureId, {
+        packetCount: info.packetCount,
+        size: info.size,
+      })
     }
-    return size
-  }
-
-  async export(filePath: string) {
-    // pcap global header: magic 0xa1b2c3d4, version 2.4, snaplen 65535, network 1 (ethernet)
-    const header = Buffer.from([
-      0xd4, 0xc3, 0xb2, 0xa1, 0x02, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-    ])
-    await fs.writeFile(filePath, Buffer.concat([header, ...this.buf]))
-  }
-
-  stop() {
-    this.stream.destroy()
+  } catch {
+    // ignore
   }
 }
 
-const captures: types.PlainObj<Capture> = {}
-
 const startCapture: IpcStartCapture = async function (deviceId, filter) {
-  const device = await client.getDevice(deviceId)
-  let cmd = 'tcpdump -U -w - -s 0'
+  const captureId = uniqId('capture')
+  const remotePath = `${CAPTURE_DIR}/aya_capture_${captureId}.pcap`
+
+  let cmd = `tcpdump -i any -p -s 0 -w ${remotePath}`
   if (filter) {
     cmd += ` ${filter}`
   }
-  const stream = await device.shell(cmd)
-  const capture = new Capture(stream)
-  capture.init()
+  // Run tcpdump in background on device
+  shell(deviceId, `${cmd} &`).catch(() => {})
 
-  const captureId = uniqId('capture')
-  capture.on('data', (stats) => {
-    window.sendTo('main', 'captureData', captureId, stats)
-  })
-  capture.on('end', () => {
-    window.sendTo('main', 'captureEnd', captureId)
-  })
-  captures[captureId] = capture
+  const info: CaptureInfo = {
+    deviceId,
+    remotePath,
+    packetCount: 0,
+    size: 0,
+    running: true,
+    timer: null,
+  }
+  captures[captureId] = info
+
+  info.timer = setInterval(() => pollStats(captureId), 1000)
 
   return captureId
 }
 
-const stopCapture: IpcStopCapture = async function (captureId) {
-  if (captures[captureId]) {
-    captures[captureId].stop()
+const stopCapture: IpcStopCapture = async function (captureId, cleanup) {
+  const info = captures[captureId]
+  if (!info) return
+
+  if (info.running) {
+    info.running = false
+    if (info.timer) {
+      clearInterval(info.timer)
+      info.timer = null
+    }
+    try {
+      await shell(info.deviceId, 'pkill -f "tcpdump.*aya_capture"')
+    } catch {
+      // ignore
+    }
+    // Poll once more to get final stats
+    await pollStats(captureId)
+    window.sendTo('main', 'captureEnd', captureId)
+  }
+
+  if (cleanup) {
+    try {
+      await shell(info.deviceId, `rm -f ${info.remotePath}`)
+    } catch {
+      // ignore
+    }
     delete captures[captureId]
   }
 }
 
 const exportCapture: IpcExportCapture = async function (captureId, filePath) {
-  if (captures[captureId]) {
-    await captures[captureId].export(filePath)
-    captures[captureId].stop()
-    delete captures[captureId]
+  const info = captures[captureId]
+  if (!info) return
+
+  const device = await client.getDevice(info.deviceId)
+  const transfer = await device.pull(info.remotePath)
+
+  await new Promise<void>((resolve, reject) => {
+    const writeStream = fs.createWriteStream(filePath)
+    transfer.on('error', reject)
+    writeStream.on('error', reject)
+    writeStream.on('finish', resolve)
+    transfer.pipe(writeStream)
+  })
+
+  // Clean up remote file
+  try {
+    await shell(info.deviceId, `rm -f ${info.remotePath}`)
+  } catch {
+    // ignore
   }
+  delete captures[captureId]
 }
 
 export function init(c: Client) {
