@@ -58,6 +58,12 @@ An enhanced fork of [AYA](https://github.com/liriliri/aya) — Android ADB deskt
 
 Download from [GitHub Releases](https://github.com/danweiyuancircle/aya_plus/releases).
 
+> **Note for macOS (Apple Silicon):** The app is unsigned, so macOS will block it on first launch. Run the following command to allow it:
+>
+> ```bash
+> sudo xattr -d com.apple.quarantine /Applications/AYAPlus.app
+> ```
+
 ## Acknowledgements
 
 AYAPlus is built on top of [AYA](https://github.com/liriliri/aya) by [surunzi](https://github.com/liriliri). Huge thanks for creating such a great open-source ADB GUI tool!

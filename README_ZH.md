@@ -58,6 +58,12 @@
 
 从 [GitHub Releases](https://github.com/danweiyuancircle/aya_plus/releases) 下载。
 
+> **macOS（Apple 芯片）注意事项：** 应用未签名，macOS 首次启动时会报错。请执行以下命令进行授权：
+>
+> ```bash
+> sudo xattr -d com.apple.quarantine /Applications/AYAPlus.app
+> ```
+
 ## 致谢
 
 AYAPlus 基于 [surunzi](https://github.com/liriliri) 开发的 [AYA](https://github.com/liriliri/aya) 构建。感谢创建了如此优秀的开源 ADB GUI 工具！
