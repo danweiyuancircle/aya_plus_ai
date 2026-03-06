@@ -7,7 +7,11 @@ import {
   IpcGetInstalledAppSignature,
 } from 'common/types'
 import { shell } from './adb/base'
+import * as file from './adb/file'
 import trim from 'licia/trim'
+import os from 'node:os'
+import path from 'node:path'
+import fs from 'fs-extra'
 
 function getApksignerJar() {
   return resolveResources('apksigner.jar')
@@ -21,7 +25,6 @@ function spawnJava(args: string[]): Promise<{
   return new Promise((resolve, reject) => {
     const cp = childProcess.spawn('java', args, {
       env: { ...process.env },
-      shell: true,
     })
 
     let stdout = ''
@@ -75,9 +78,10 @@ const signApk: IpcSignApk = async function (
     apkPath,
   ]
 
-  const { stderr, code } = await spawnJava(args)
+  const { stdout, stderr, code } = await spawnJava(args)
   if (code !== 0) {
-    throw new Error(trim(stderr) || 'Sign failed')
+    const errMsg = trim(stderr) || trim(stdout) || 'Sign failed'
+    throw new Error(errMsg)
   }
 }
 
@@ -144,7 +148,7 @@ const verifyApk: IpcVerifyApk = async function (apkPath) {
 
   const { stdout, stderr, code } = await spawnJava(args)
   if (code !== 0) {
-    throw new Error(trim(stderr) || 'Verify failed')
+    throw new Error(trim(stderr) || trim(stdout) || 'Verify failed')
   }
 
   return parseSignatureInfo(stdout)
@@ -154,41 +158,34 @@ const getInstalledAppSignature: IpcGetInstalledAppSignature = async function (
   deviceId,
   packageName,
 ) {
-  const result = await shell(
-    deviceId,
-    `dumpsys package ${packageName} | grep -A 20 "Signatures"`,
-  )
-
-  const info: ISignatureInfo = {
-    schemeVersion: '',
-    subject: '',
-    issuer: '',
-    validFrom: '',
-    validUntil: '',
-    md5: '',
-    sha1: '',
-    sha256: '',
+  // Get APK path from device
+  const pmResult = await shell(deviceId, `pm path ${packageName}`)
+  const apkLine = trim(pmResult).split('\n')[0]
+  if (!apkLine || !apkLine.startsWith('package:')) {
+    throw new Error('APK path not found')
   }
+  const remoteApkPath = apkLine.substring(8).trim()
 
-  const lines = result.split('\n')
-  for (const line of lines) {
-    const trimmed = trim(line)
-    if (trimmed.startsWith('Subject:')) {
-      info.subject = trimmed.substring(9).trim()
+  // Pull APK to local temp
+  const tmpApk = path.join(os.tmpdir(), `aya_sig_${Date.now()}.apk`)
+  try {
+    const buf = await file.pullFileData(deviceId, remoteApkPath)
+    await fs.writeFile(tmpApk, buf)
+
+    // Verify locally using apksigner
+    const jar = getApksignerJar()
+    const args = ['-jar', jar, 'verify', '--verbose', '--print-certs', tmpApk]
+
+    const { stdout, stderr, code } = await spawnJava(args)
+    if (code !== 0) {
+      throw new Error(trim(stderr) || trim(stdout) || 'Verify failed')
     }
-    if (trimmed.startsWith('Issuer:')) {
-      info.issuer = trimmed.substring(7).trim()
-    }
-    if (trimmed.startsWith('Valid from:')) {
-      const parts = trimmed.substring(11).split(' until: ')
-      info.validFrom = parts[0].trim()
-      if (parts[1]) {
-        info.validUntil = parts[1].trim()
-      }
-    }
+
+    return parseSignatureInfo(stdout)
+  } finally {
+    // Clean up temp file
+    fs.remove(tmpApk).catch(() => {})
   }
-
-  return info
 }
 
 export function init() {
